@@ -12,8 +12,10 @@ import com.learn.mydy.service.LoginService;
 import com.learn.mydy.service.user.UserService;
 import com.learn.mydy.service.user.impl.UserServiceImpl;
 import com.learn.mydy.utils.JwtUtils;
+import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
 import javax.annotation.Resource;
 import javax.imageio.ImageIO;
@@ -37,24 +39,14 @@ public class LoginServiceImpl implements LoginService {
 
 
     @Override
-    public R captcha(String uuId, HttpServletResponse response) {
-        if (uuId == null || uuId.isEmpty()) {
-            return R.error().message("验证码ID不能为空");
-        }
-        //获取图形验证码
-        BufferedImage captcha = captchaService.getCaptcha(uuId);
-        try {
-            //设置响应头，告诉浏览器返回的是图片
-            response.setContentType("image/jpeg");
-            //禁止浏览器缓存
-            response.setHeader("Cache-Control", "no-store, no-cache");
-            ServletOutputStream outputStream = response.getOutputStream();
-            //将验证码图片写入响应流
-            ImageIO.write(captcha, "jpg", outputStream);
-            outputStream.flush();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    public R captcha(String uuId, HttpServletResponse response) throws IOException {
+        if (ObjectUtils.isEmpty(uuId)) throw new IllegalArgumentException("uuid不能为空");
+        response.setHeader("Cache-Control", "no-store, no-cache");
+        response.setContentType("image/jpeg");
+        BufferedImage image = captchaService.getCaptcha(uuId);
+        ServletOutputStream out = response.getOutputStream();
+        ImageIO.write(image, "jpg", out);
+        IOUtils.closeQuietly(out);
         return R.ok();
     }
 

@@ -8,9 +8,10 @@ import com.learn.mydy.entity.Captcha;
 import com.learn.mydy.entity.user.User;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 public interface LoginService {
-    R captcha(String uuId, HttpServletResponse response);
+    R captcha(String uuId, HttpServletResponse response) throws IOException;
 
     R getCode(Captcha captcha);
 

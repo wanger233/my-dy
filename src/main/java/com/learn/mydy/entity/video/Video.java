@@ -2,7 +2,10 @@ package com.learn.mydy.entity.video;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.learn.mydy.config.QiNiuConfig;
+import com.learn.mydy.dto.UserDTO;
 import com.learn.mydy.entity.BaseEntity;
+import com.learn.mydy.entity.user.User;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -65,7 +68,57 @@ public class Video extends BaseEntity {
     private String duration;
 
 
+    // 视频分类
+    @TableField(exist = false)
+    private String videoType;
+
     private String labelNames;
+
+    // 关联的用户
+    @TableField(exist = false)
+    private UserDTO user;
+
+    // 关联分类名称
+    @TableField(exist = false)
+    private String typeName;
+
+    // 是否点赞
+    @TableField(exist = false)
+    private Boolean start;
+
+    // 是否收藏
+    @TableField(exist = false)
+    private Boolean favorites;
+
+    // 是否关注
+    @TableField(exist = false)
+    private Boolean follow;
+
+    // 用户昵称
+    @TableField(exist = false)
+    private String userName;
+
+    // 审核状态名称
+    @TableField(exist = false)
+    private String auditStateName;
+
+    // 是否公开
+    @TableField(exist = false)
+    private String openName;
+
+    public List<String> buildLabel(){
+        if (ObjectUtils.isEmpty(this.labelNames)) return Collections.EMPTY_LIST;
+        return Arrays.asList(this.labelNames.split(","));
+    }
+
+    // 和get方法分开，避免发生歧义
+    public String buildVideoUrl(){
+        return QiNiuConfig.CNAME + "/" + this.url;
+    }
+
+    public String buildCoverUrl(){
+        return QiNiuConfig.CNAME + "/" + this.cover;
+    }
 
 
 }
